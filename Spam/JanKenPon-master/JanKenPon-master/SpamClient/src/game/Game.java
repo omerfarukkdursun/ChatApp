@@ -109,6 +109,7 @@ public class Game extends javax.swing.JFrame {
         jList_ekran = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList_Users = new javax.swing.JList();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -163,6 +164,9 @@ public class Game extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jList_Users);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 80, 300));
+
+        jButton1.setText("jButton1");
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 420, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -254,6 +258,7 @@ public class Game extends javax.swing.JFrame {
     public javax.swing.JButton btn_connect;
     public javax.swing.JButton btn_send_message;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton jButton1;
     public static javax.swing.JList jList_Users;
     public static javax.swing.JList jList_ekran;
     private javax.swing.JScrollPane jScrollPane1;
