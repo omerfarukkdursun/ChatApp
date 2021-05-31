@@ -6,6 +6,7 @@
 package jankenponserver;
 
 import game.Message;
+import game.OzelMesaj;
 import java.io.IOException;
 
 import java.net.ServerSocket;
@@ -107,10 +108,10 @@ public class Server {
 
     public static void Baglandi(Message msg) {
 
-        if (Server.Clients.size()>0) {
-            
+        if (Server.Clients.size() > 0) {
+
             DefaultListModel userList = new DefaultListModel();
-            
+
             for (SClient client : Clients) {
                 userList.addElement(client.name);
             }
@@ -123,6 +124,21 @@ public class Server {
 
             }
 
+        }
+
+    }
+
+    public static void OzelGonder(Message msg) {
+
+        OzelMesaj gelenMesaj = (OzelMesaj) msg.content;
+
+        for (SClient client : Clients) {
+            if (client.name.equals(gelenMesaj.alici)) {
+                Message gidecekMesaj = new Message(Message.Message_Type.OzelMesaj);
+                gidecekMesaj.content = gelenMesaj;
+                Server.Send(client, gidecekMesaj);
+
+            }
         }
 
     }

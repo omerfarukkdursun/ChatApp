@@ -14,8 +14,9 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import jankenponclient.Client;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.DefaultListModel;
-
 
 /**
  *
@@ -34,7 +35,10 @@ public class Game extends javax.swing.JFrame {
     //icon dizileri
     public DefaultListModel dlmEkran;
     public DefaultListModel dlmUye;
-   
+    public ArrayList<String> OzelMesajListesi = new ArrayList<String>();
+
+    public HashMap<String, KisiselSohbet> SohbetMap = new HashMap<String, KisiselSohbet>();
+
     Random rand;
 
     /**
@@ -45,14 +49,12 @@ public class Game extends javax.swing.JFrame {
         initComponents();
         ThisGame = this;
         rand = new Random();
-        dlmEkran= new DefaultListModel();
+        dlmEkran = new DefaultListModel();
         jList_ekran.setModel(dlmEkran);
-        
-        
-        dlmUye= new DefaultListModel();
+
+        dlmUye = new DefaultListModel();
         jList_Users.setModel(dlmUye);
 
-       
         // resimleri döndürmek için tread aynı zamanda oyun bitiminide takip ediyor
         tmr_slider = new Thread(() -> {
             //soket bağlıysa dönsün
@@ -63,15 +65,14 @@ public class Game extends javax.swing.JFrame {
                     //eğer ikisinden biri -1 ise resim dönmeye devam etsin sonucu göstermesin
                     if (RivalSelection == -1 || myselection == -1) {
                         int g = rand.nextInt(2);
-                      
+
                     }// eğer iki seçim yapılmışsa sonuç gösterilebilir.  
                     else {
 
-                       
                         //sonuç el olarak gösterildikten 4 saniye sonra smiley gelsin
                         Thread.sleep(4000);
                         //smiley sonuç resimleri
-                      
+
                         tmr_slider.stop();
 
                         //7 saniye sonra oyun bitsin tekrar bağlansın
@@ -84,11 +85,8 @@ public class Game extends javax.swing.JFrame {
                 }
             }
         });
-        
 
     }
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -109,7 +107,8 @@ public class Game extends javax.swing.JFrame {
         jList_ekran = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList_Users = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
+        jButtonOzelSohbet = new javax.swing.JButton();
+        jButtonBaslat = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -165,50 +164,91 @@ public class Game extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 80, 300));
 
-        jButton1.setText("jButton1");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 420, -1, -1));
+        jButtonOzelSohbet.setText("jButton1");
+        jButtonOzelSohbet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonOzelSohbetActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButtonOzelSohbet, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 420, -1, -1));
+
+        jButtonBaslat.setText("jButton1");
+        jButtonBaslat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBaslatActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButtonBaslat, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 290, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    public void reciveText(String msg){
+    public void reciveText(String msg) {
         dlmEkran.addElement(msg);
-        jList_ekran.setModel(dlmEkran);    
+        jList_ekran.setModel(dlmEkran);
     }
-    
-    public void getNewUser(DefaultListModel msg){
-        
-        jList_Users.setModel(msg);    
-       
+
+    public void getNewUser(DefaultListModel msg) {
+
+        jList_Users.setModel(msg);
+
     }
-    
-    
-    
+
+    public void OzelMesajiAl(OzelMesaj gelenMesaj) {
+
+        String gonderen = gelenMesaj.gonderen;
+        String ileti = gelenMesaj.mesaj;
+        if (OzelMesajListesi.contains(gonderen)) {
+
+            SohbetMap.get(gonderen).DlmOzelSohbetMesajlari.addElement(ileti);
+
+            SohbetMap.get(gonderen).jListKisiselMesaj.setModel(SohbetMap.get(gonderen).DlmOzelSohbetMesajlari);
+
+        } else {
+
+            KisiselSohbet yeniSohbet = new KisiselSohbet();
+            yeniSohbet.Kullanici = txt_name.getText();
+            yeniSohbet.hedefKullanici = gonderen;
+
+            yeniSohbet.DlmOzelSohbetMesajlari.addElement(ileti);
+            yeniSohbet.jLabelKullanici.setText(txt_name.getText());
+            yeniSohbet.jLabelHedef.setText(gonderen);
+            yeniSohbet.jListKisiselMesaj.setModel(yeniSohbet.DlmOzelSohbetMesajlari);
+            yeniSohbet.setVisible(true);
+
+            SohbetMap.put(gonderen, yeniSohbet);
+
+            OzelMesajListesi.add(gonderen);
+
+        }
+
+    }
+
+
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
 
         //bağlanılacak server ve portu veriyoruz
         Client.Start("127.0.0.1", 2000);
         //başlangıç durumları
-       
+
         btn_connect.setEnabled(false);
         txt_name.setEnabled(false);
         btn_send_message.setEnabled(true);
-          
-   
+
 
     }//GEN-LAST:event_btn_connectActionPerformed
 
     private void btn_send_messageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_send_messageActionPerformed
-        
+
         String name = txt_name.getText();
-        
+
         //metin mesajı gönder
         Message msg = new Message(Message.Message_Type.Text);
         String x = txtgmesaj.getText();
         msg.content = name + " :" + txtgmesaj.getText();
         Client.Send(msg);
         txtgmesaj.setText("");
+
 
     }//GEN-LAST:event_btn_send_messageActionPerformed
 
@@ -217,6 +257,33 @@ public class Game extends javax.swing.JFrame {
         //form kapanırken clienti durdur
         Client.Stop();
     }//GEN-LAST:event_formWindowClosing
+
+    private void jButtonOzelSohbetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOzelSohbetActionPerformed
+
+        if (!OzelMesajListesi.contains((String) jList_Users.getSelectedValue())) {
+
+            KisiselSohbet OzelSohbet = new KisiselSohbet();
+            OzelSohbet.DlmOzelSohbetMesajlari = new DefaultListModel();
+            OzelSohbet.Kullanici = txt_name.getText();
+            OzelSohbet.hedefKullanici = (String) jList_Users.getSelectedValue();
+            OzelSohbet.jLabelKullanici.setText(txt_name.getText());
+            OzelSohbet.jLabelHedef.setText((String) jList_Users.getSelectedValue());
+
+            OzelMesajListesi.add(((String) jList_Users.getSelectedValue()));
+
+            SohbetMap.put((String) jList_Users.getSelectedValue(), OzelSohbet);
+
+            OzelSohbet.setVisible(true);
+
+        }
+
+    }//GEN-LAST:event_jButtonOzelSohbetActionPerformed
+
+    private void jButtonBaslatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaslatActionPerformed
+        // TODO add your handling code here:
+        KisiselSohbet OzelSohbet = new KisiselSohbet();
+        OzelSohbet.setVisible(true);
+    }//GEN-LAST:event_jButtonBaslatActionPerformed
 
     /**
      * @param args the command line arguments
@@ -258,7 +325,8 @@ public class Game extends javax.swing.JFrame {
     public javax.swing.JButton btn_connect;
     public javax.swing.JButton btn_send_message;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonBaslat;
+    private javax.swing.JButton jButtonOzelSohbet;
     public static javax.swing.JList jList_Users;
     public static javax.swing.JList jList_ekran;
     private javax.swing.JScrollPane jScrollPane1;

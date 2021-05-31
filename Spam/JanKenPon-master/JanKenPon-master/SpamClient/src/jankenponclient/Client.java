@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static jankenponclient.Client.sInput;
 import game.Game;
+import game.OzelMesaj;
 import javax.swing.DefaultListModel;
 
 /**
@@ -53,6 +54,9 @@ class Listen extends Thread {
                         
                     case NewUser:
                         Game.ThisGame.getNewUser((DefaultListModel)received.content);
+                        break;    
+                    case OzelMesaj:
+                        Game.ThisGame.OzelMesajiAl((OzelMesaj)received.content);
                         break;    
 
                     case Bitis:

@@ -97,6 +97,12 @@ public class SClient {
                             //gelen seçim yapıldı mesajını rakibe gönder
                             Server.Send(TheClient.rival, received);
                             break;
+                            
+                        case OzelMesaj:
+                            
+                            Server.OzelGonder(received);
+                            break;    
+                            
                         case Bitis:
                             break;
 
