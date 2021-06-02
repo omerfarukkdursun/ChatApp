@@ -101,7 +101,11 @@ public class SClient {
                         case OzelMesaj:
                             
                             Server.OzelGonder(received);
-                            break;    
+                            break;
+                          
+                        case DosyaGonder:
+                            Server.Send(TheClient,received);
+                            break;
                             
                         case Bitis:
                             break;

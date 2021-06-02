@@ -17,6 +17,20 @@ public class OzelMesaj implements java.io.Serializable {
         this.mesaj = mesaj;
     }
     
+    
+    public OzelMesaj(String gonderen, String alici, Object content, String dosyaAdi) {
+        this.gonderen = gonderen;
+        this.alici = alici;
+        this.content = content;
+        this.dosyaAdi = dosyaAdi;
+
+    }
+    
+    public Object content;
+    public String dosyaAdi;
+
+    
+    
     public String gonderen;
     public String alici;
     public String mesaj;

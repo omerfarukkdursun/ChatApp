@@ -7,6 +7,14 @@ package game;
 
 import javax.swing.DefaultListModel;
 import jankenponclient.Client;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -42,6 +50,7 @@ public class KisiselSohbet extends javax.swing.JFrame {
         jButtonKisiselGonder = new javax.swing.JButton();
         jLabelKullanici = new javax.swing.JLabel();
         jLabelHedef = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,19 +76,17 @@ public class KisiselSohbet extends javax.swing.JFrame {
 
         jLabelHedef.setText("jLabel2");
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextFieldKisiselMesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonGeri)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonKisiselGonder, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -91,6 +98,17 @@ public class KisiselSohbet extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(250, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jTextFieldKisiselMesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jButtonGeri)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButtonKisiselGonder, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,7 +125,9 @@ public class KisiselSohbet extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonKisiselGonder)
                     .addComponent(jButtonGeri))
-                .addContainerGap(156, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(113, Short.MAX_VALUE))
         );
 
         pack();
@@ -126,6 +146,44 @@ public class KisiselSohbet extends javax.swing.JFrame {
 
         jListKisiselMesaj.setModel(DlmOzelSohbetMesajlari);
     }//GEN-LAST:event_jButtonKisiselGonderActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JFileChooser fs = new JFileChooser();
+        fs.setDialogTitle("Dosya Sec");
+        int result = fs.showSaveDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File fi = fs.getSelectedFile();
+            byte[] bufferdizi = new byte[(int) fi.length()]; // byte olarak içine atar.
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(fi);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+
+                bis.read(bufferdizi, 0, bufferdizi.length);
+                Message msg = new Message(Message.Message_Type.DosyaGonder);
+                msg.content = new OzelMesaj(Kullanici, hedefKullanici, bufferdizi, fi.getName());
+                Client.Send(msg);
+
+                Message msg1 = new Message(Message.Message_Type.OzelMesaj);
+                msg1.content = new OzelMesaj(Kullanici, hedefKullanici, Kullanici + " :" + fi.getName() + " isimli dosya paylaşıldı");
+
+                Client.Send(msg1);
+                DlmOzelSohbetMesajlari.addElement(Kullanici + " :" + fi.getName() + " isimli dosya paylaşıldı");
+              
+
+                jListKisiselMesaj.setModel(DlmOzelSohbetMesajlari);
+
+                System.out.println(((OzelMesaj) msg.content).dosyaAdi + " Gonderildi");
+
+            } catch (IOException ex) {
+                Logger.getLogger(KisiselSohbet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -166,6 +224,7 @@ public class KisiselSohbet extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonGeri;
     private javax.swing.JButton jButtonKisiselGonder;
     public static javax.swing.JLabel jLabelHedef;

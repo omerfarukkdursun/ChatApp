@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 import static jankenponclient.Client.sInput;
 import game.Game;
 import game.OzelMesaj;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import javax.swing.DefaultListModel;
 
 /**
@@ -30,6 +33,9 @@ class Listen extends Thread {
             try {
                 //mesaj gelmesini bloking olarak dinyelen komut
                 Message received = (Message) (sInput.readObject());
+                
+
+                
                 //mesaj gelirse bu satıra geçer
                 //mesaj tipine göre yapılacak işlemi ayır.
                 switch (received.type) {
@@ -37,27 +43,41 @@ class Listen extends Thread {
                         break;
                     case RivalConnected:
                         String name = received.content.toString();
-                      
+
                         Game.ThisGame.btn_send_message.setEnabled(true);
                         Game.ThisGame.tmr_slider.start();
                         break;
                     case Disconnect:
                         break;
                     case Text:
-                        Game.ThisGame.reciveText((String)received.content);
-                        
+                        Game.ThisGame.reciveText((String) received.content);
+
                         break;
                     case Selected:
                         Game.ThisGame.RivalSelection = (int) received.content;
 
                         break;
-                        
+
                     case NewUser:
-                        Game.ThisGame.getNewUser((DefaultListModel)received.content);
-                        break;    
+                        Game.ThisGame.getNewUser((DefaultListModel) received.content);
+                        break;
                     case OzelMesaj:
-                        Game.ThisGame.OzelMesajiAl((OzelMesaj)received.content);
-                        break;    
+                        Game.ThisGame.OzelMesajiAl((OzelMesaj) received.content);
+                        break;
+                    case DosyaGonder:
+                        System.out.println("DosyaGonder");
+                        String home = System.getProperty("user.home"); //dosya kaydı için gerekli kullanıcı adını alır
+
+                       
+                        OzelMesaj m2 = (OzelMesaj) received.content;
+
+                        File file = new File(home + "/Downloads/" + m2.dosyaAdi);
+                        OutputStream os = new FileOutputStream(file);
+                        byte[] bdizi = (byte[]) m2.content;// geleni cast eder.
+                        os.write(bdizi);
+                        System.out.println(m2.dosyaAdi+" geldi");
+                        os.close();
+                        break;
 
                     case Bitis:
                         break;
@@ -102,7 +122,7 @@ public class Client {
             Client.sOutput = new ObjectOutputStream(Client.socket.getOutputStream());
             Client.listenMe = new Listen();
             Client.listenMe.start();
-            
+
             //ilk mesaj olarak isim gönderiyorum
             Message msg = new Message(Message.Message_Type.Name);
             msg.content = Game.ThisGame.txt_name.getText();
