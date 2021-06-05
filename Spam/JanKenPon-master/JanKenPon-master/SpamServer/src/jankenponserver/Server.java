@@ -63,6 +63,7 @@ public class Server {
     //public static PairingThread pairThread;
 
     public static ArrayList<SClient> Clients = new ArrayList<>();
+    public static ArrayList<Oda> odalar = new ArrayList<>();
 
     //semafor nesnesi
     public static Semaphore pairTwo = new Semaphore(1, true);
@@ -141,6 +142,36 @@ public class Server {
             }
         }
 
+    }
+    public static void odalariGonder(){
+        ArrayList<String> odaList = new ArrayList<>();
+        for (Oda o : odalar) {
+            odaList.add(o.odaAdi);
+        }
+        Message msg = new Message(Message.Message_Type.OdaOlustur);
+        msg.content = odaList;
+        for (SClient c : Clients) {
+            Server.Send(c, msg);
+        }
+    }
+    
+    public static Oda odaBul(String odaAdi){
+        for (Oda oda : odalar) {
+            if(oda.odaAdi.equalsIgnoreCase(odaAdi)){
+                return oda;
+            }
+        }
+        System.out.println("Bulamadı!!!");
+        return null;
+    }
+    
+    public static void odaMsjDagit(ArrayList<String> msjBilgisi){
+        Oda oda = odaBul(msjBilgisi.get(1));
+        Message msj = new Message(Message.Message_Type.odaChat);
+        msj.content = msjBilgisi;
+        for (SClient theMsj : oda.clients) { 
+                Send(theMsj, msj);
+        }
     }
 
 }

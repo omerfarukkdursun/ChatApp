@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,10 +82,8 @@ public class SClient {
                     //mesaj tipine göre işlemlere ayır
                     switch (received.type) {
                         case Name:
-                            
                             TheClient.name = received.content.toString();
                             Server.Baglandi(received);
-                            
                             // isim verisini gönderdikten sonra eşleştirme işlemine başla
                             break;
                         case Disconnect:
@@ -99,7 +98,6 @@ public class SClient {
                             break;
                             
                         case OzelMesaj:
-                            
                             Server.OzelGonder(received);
                             break;
                           
@@ -109,7 +107,37 @@ public class SClient {
                             
                         case Bitis:
                             break;
-
+                        case OdaOlustur:
+                            Oda o = new Oda((String)received.content);
+                            Server.odalar.add(o);
+                            o.clients.add(TheClient);
+                            Server.odalariGonder();
+                            System.out.println(o.odaAdi + " isimli oda oluşturuldu.");
+                            break;
+                        case OdayaKatil:
+                            System.out.println("Serverda");
+                            Oda oda = Server.odaBul((String)received.content);
+                            System.out.println("server oda "+oda.odaAdi);
+                            oda.clients.add(TheClient);
+                            ArrayList<String> odaSakinleri = new ArrayList<>();
+                            for (SClient sakinler : oda.clients) {
+                                odaSakinleri.add(sakinler.name);
+                            }
+                            System.out.println("Server Sakinler Size: " + odaSakinleri.size());
+                            ArrayList<Object> odaBilgisi = new ArrayList<>();
+                            odaBilgisi.add(oda.odaAdi);
+                            odaBilgisi.add(odaSakinleri);
+                            Message odaMsj = new Message(Message.Message_Type.OdayaKatil);
+                            odaMsj.content = odaBilgisi;
+                            int a = 0;
+                            for (SClient sakinler : oda.clients) {
+                                Server.Send(sakinler, odaMsj);
+                            }
+                            System.out.println("sended " + a + " number of clients");
+                            break;
+                        case odaChat:
+                            Server.odaMsjDagit((ArrayList<String>) received.content);
+                            break;
                     }
 
                 } catch (IOException ex) {

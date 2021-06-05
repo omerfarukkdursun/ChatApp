@@ -34,8 +34,12 @@ public class Game extends javax.swing.JFrame {
     public int myselection = -1;
     //icon dizileri
     public DefaultListModel dlmEkran;
+    public DefaultListModel dlmOdaList;
     public DefaultListModel dlmUye;
     public ArrayList<String> OzelMesajListesi = new ArrayList<String>();
+    public ArrayList<SohbetOdasi> odalar;
+    public String kullaniciAdi;
+    
 
     public HashMap<String, KisiselSohbet> SohbetMap = new HashMap<String, KisiselSohbet>();
 
@@ -51,10 +55,10 @@ public class Game extends javax.swing.JFrame {
         rand = new Random();
         dlmEkran = new DefaultListModel();
         jList_ekran.setModel(dlmEkran);
-
+        odalar = new ArrayList<>();
         dlmUye = new DefaultListModel();
         jList_Users.setModel(dlmUye);
-
+        dlmOdaList = new DefaultListModel();
         // resimleri döndürmek için tread aynı zamanda oyun bitiminide takip ediyor
         tmr_slider = new Thread(() -> {
             //soket bağlıysa dönsün
@@ -98,19 +102,29 @@ public class Game extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        txt_name = new javax.swing.JTextField();
-        btn_connect = new javax.swing.JButton();
         pnl_gamer1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        btn_connect = new javax.swing.JButton();
+        txt_name = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         btn_send_message = new javax.swing.JButton();
-        txtgmesaj = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList_ekran = new javax.swing.JList();
+        txtgmesaj = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList_Users = new javax.swing.JList();
         jButtonOzelSohbet = new javax.swing.JButton();
-        jButtonBaslat = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        odaList = new javax.swing.JList();
+        odaAdiTxt = new javax.swing.JTextField();
+        katilButton = new javax.swing.JButton();
+        odaButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(620, 570));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -118,67 +132,197 @@ public class Game extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txt_name.setText("Name");
-        getContentPane().add(txt_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 170, 20));
-
-        btn_connect.setText("Connect");
-        btn_connect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_connectActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btn_connect, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 60, 160, -1));
-
         pnl_gamer1.setBackground(new java.awt.Color(255, 153, 153));
         pnl_gamer1.setForeground(new java.awt.Color(51, 255, 0));
         pnl_gamer1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         getContentPane().add(pnl_gamer1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, 259));
 
-        btn_send_message.setText("Send");
+        jPanel2.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Giriş Ekranı"));
+
+        btn_connect.setBackground(new java.awt.Color(18, 30, 49));
+        btn_connect.setText("Baglan");
+        btn_connect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_connectActionPerformed(evt);
+            }
+        });
+
+        txt_name.setText("Name");
+        txt_name.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_nameActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setBackground(new java.awt.Color(18, 30, 49));
+        jLabel1.setText("Kullanıcı Adı");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(192, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(45, 45, 45)
+                .addComponent(btn_connect, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(102, 102, 102))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_connect)
+                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 770, 80));
+
+        jPanel1.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Grup Sohbeti"));
+
+        btn_send_message.setText("Toplu Mesaji Gönder");
         btn_send_message.setEnabled(false);
         btn_send_message.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_send_messageActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_send_message, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 420, 350, -1));
 
-        txtgmesaj.setText("jTextField1");
-        getContentPane().add(txtgmesaj, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 390, 250, -1));
-
-        jList_ekran.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jList_ekran.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(jList_ekran);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 250, 280));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_send_message, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtgmesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addComponent(txtgmesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btn_send_message)
+                .addContainerGap())
+        );
 
-        jList_Users.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 300, 410));
+
+        jPanel4.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Çevrimiçi Kullanıcılar"));
+
         jScrollPane2.setViewportView(jList_Users);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 80, 300));
-
-        jButtonOzelSohbet.setText("jButton1");
+        jButtonOzelSohbet.setText("Özel Sohbet");
         jButtonOzelSohbet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOzelSohbetActionPerformed(evt);
             }
         });
-        getContentPane().add(jButtonOzelSohbet, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 420, -1, -1));
 
-        jButtonBaslat.setText("jButton1");
-        jButtonBaslat.addActionListener(new java.awt.event.ActionListener() {
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonOzelSohbet, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(jButtonOzelSohbet)
+                .addContainerGap())
+        );
+
+        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 100, 160, 410));
+
+        jPanel3.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Grup Sohbeti"));
+        jPanel3.setForeground(new java.awt.Color(102, 0, 0));
+
+        odaList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { " " };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(odaList);
+
+        odaAdiTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonBaslatActionPerformed(evt);
+                odaAdiTxtActionPerformed(evt);
             }
         });
-        getContentPane().add(jButtonBaslat, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 290, -1, -1));
+
+        katilButton.setText("Odaya Katıl");
+        katilButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                katilButtonActionPerformed(evt);
+            }
+        });
+
+        odaButton.setText("Oda Oluştur");
+        odaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                odaButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(katilButton)
+                        .addGap(22, 22, 22)
+                        .addComponent(odaButton))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(odaAdiTxt))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(odaAdiTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(katilButton)
+                    .addComponent(odaButton))
+                .addContainerGap())
+        );
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 100, 230, 410));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -226,9 +370,11 @@ public class Game extends javax.swing.JFrame {
 
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
-
+        this.kullaniciAdi = txt_name.getText();
         //bağlanılacak server ve portu veriyoruz
-        Client.Start("127.0.0.1", 2000);
+        //Client.Start("127.0.0.1", 2000);
+        Client.Start("18.117.86.253", 2000);
+        
         //başlangıç durumları
 
         btn_connect.setEnabled(false);
@@ -279,11 +425,57 @@ public class Game extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButtonOzelSohbetActionPerformed
 
-    private void jButtonBaslatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBaslatActionPerformed
+    public void getOdalar(ArrayList<String> odalar){
+        dlmOdaList.removeAllElements();
+        odaList.removeAll();
+        for (String oda : odalar) {
+            dlmOdaList.addElement(oda);
+        }
+        odaList.setModel(dlmOdaList);
+    }
+    
+    private void odaAdiTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_odaAdiTxtActionPerformed
         // TODO add your handling code here:
-        KisiselSohbet OzelSohbet = new KisiselSohbet();
-        OzelSohbet.setVisible(true);
-    }//GEN-LAST:event_jButtonBaslatActionPerformed
+    }//GEN-LAST:event_odaAdiTxtActionPerformed
+
+    private void odaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_odaButtonActionPerformed
+        SohbetOdasi so = new SohbetOdasi(this.kullaniciAdi, odaAdiTxt.getText());
+        odalar.add(so);
+        so.kullaniciList.add(this.kullaniciAdi);
+        so.setVisible(true);
+        Message msg = new Message(Message.Message_Type.OdaOlustur);
+        msg.content = so.odaAdi;
+        Client.Send(msg);
+        
+    }//GEN-LAST:event_odaButtonActionPerformed
+    
+    public SohbetOdasi odaBul(String odaİsmi){
+        
+        for (SohbetOdasi arananOda : this.odalar) {
+           if(arananOda.odaAdi.equalsIgnoreCase(odaİsmi)){
+               System.out.println("OdaBulundu");
+               return arananOda;
+           }
+        }
+        
+        return null;
+    }
+    
+    private void txt_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_nameActionPerformed
+
+    private void katilButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_katilButtonActionPerformed
+        SohbetOdasi so = new SohbetOdasi(this.kullaniciAdi, (String) odaList.getSelectedValue());
+        this.odalar.add(so);
+        so.kullaniciList.add(this.kullaniciAdi);
+        so.setVisible(true);
+        Message msg = new Message(Message.Message_Type.OdayaKatil);
+        msg.content = odaList.getSelectedValue();
+        System.out.println("Mesaj Clienttan yollanıyor");
+        Client.Send(msg);
+        System.out.println("Yollandı");
+    }//GEN-LAST:event_katilButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -325,12 +517,21 @@ public class Game extends javax.swing.JFrame {
     public javax.swing.JButton btn_connect;
     public javax.swing.JButton btn_send_message;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButtonBaslat;
     private javax.swing.JButton jButtonOzelSohbet;
+    private javax.swing.JLabel jLabel1;
     public static javax.swing.JList jList_Users;
     public static javax.swing.JList jList_ekran;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JButton katilButton;
+    private javax.swing.JTextField odaAdiTxt;
+    private javax.swing.JButton odaButton;
+    private javax.swing.JList odaList;
     private javax.swing.JPanel pnl_gamer1;
     public javax.swing.JTextField txt_name;
     private javax.swing.JTextField txtgmesaj;

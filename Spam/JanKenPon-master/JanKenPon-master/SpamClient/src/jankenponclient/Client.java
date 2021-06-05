@@ -15,9 +15,11 @@ import java.util.logging.Logger;
 import static jankenponclient.Client.sInput;
 import game.Game;
 import game.OzelMesaj;
+import game.SohbetOdasi;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 /**
@@ -81,7 +83,21 @@ class Listen extends Thread {
 
                     case Bitis:
                         break;
-
+                    case OdaOlustur:
+                        Game.ThisGame.getOdalar((ArrayList<String>)received.content);
+                        System.out.println("Oda listesi geldi.");
+                        break;
+                    case OdayaKatil:
+                        ArrayList<Object> odaBilgisi = (ArrayList<Object>) received.content;
+                        SohbetOdasi oda = Game.ThisGame.odaBul((String)odaBilgisi.get(0));
+                        ArrayList<String> names = (ArrayList<String>)(odaBilgisi.get(1));
+                        oda.getOdadakiler(names);
+                        break;
+                    case odaChat:
+                        ArrayList<String> msjBilgisi = (ArrayList<String>) received.content;
+                        SohbetOdasi so = Game.ThisGame.odaBul(msjBilgisi.get(1));
+                        so.getOdaMsj(msjBilgisi.get(0), msjBilgisi.get(2));
+                        break;
                 }
 
             } catch (IOException ex) {
